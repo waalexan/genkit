@@ -1,0 +1,19 @@
+{
+  "name": "nova-pasta",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@genkit-ai/googleai": "^1.6.2",
+    "@genkit-ai/vertexai": "^1.6.2",
+    "data-urls": "^5.0.0",
+    "dotenv": "^16.5.0",
+    "genkit": "^1.6.2"
+  }
+}
