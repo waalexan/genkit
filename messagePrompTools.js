@@ -55,13 +55,14 @@ const training = ai.defineFlow('message', async (message) => {
     model: gemini15Flash,
     prompt: message,
     tools: [execOperaction], // Corrigido: registrando a ferramenta certa
+    toolChoice: 'auto',  
   });
 
   return response.text;
 });
 
 // Teste
-training("adicionar contato 'João' com o telefone '123456789' e enviar mensagem 'Olá, João!'")
+training("quem e o primeiro-ministro do Brasil?")
   .then(response => {
     console.log("Resposta:", response);
   })
