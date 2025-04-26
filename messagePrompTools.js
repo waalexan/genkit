@@ -8,36 +8,60 @@ const ai = genkit({
   model: gemini15Flash,
 });
 
-const getSchool = ai.defineTool(
+const FunctionsEnum = {
+  SEND_WHATSAPP_MESSAGE: 'send_whatsapp_message',
+  ADD_CONTACT_TO_DB: 'add_contact_to_db',
+  SEND_EMAIL_MESSAGE: 'send_email_message',
+};
+
+// Ferramenta registrada
+const execOperaction = ai.defineTool(
   {
-    name: 'getSchool',
-    description: 'Obtém o nome da escola onde o usuário estuda',
+    name: 'execOperaction',
+    description: 'Executa uma tarefa ou responde uma pergunta',
     inputSchema: z.object({
-      name: z.string().describe('Nome do usuário'),
-      school: z.string().describe('Nome da escola'),
+      name: z.string().describe('Nome em contexto (pessoal ou empresa)'),
+      phone: z.string().describe('Número de telefone'),
+      email: z.string().describe('Email em contexto'),
+      nickname: z.string().describe('Apelido ou nome informal'),
+      message: z.string().describe('Mensagem a ser enviada'),
+      function: z.enum(Object.values(FunctionsEnum)).describe('Operação a ser executada'),
     }),
     outputSchema: z.string(),
   },
   async (input) => {
-    // Processa a entrada para identificar a escola mencionada
-    console.log('Input:', input.school);
-    console.log('Input:', input.name);
-    return `Você estuda na ${input.school}.`;
+    const { name, phone, email, nickname, message, function: operation } = input;
+
+    console.log(`Executando operação: ${operation}`);
+
+    // Aqui você pode fazer a lógica para cada operação
+    switch (operation) {
+      case FunctionsEnum.SEND_EMAIL_MESSAGE:
+        // Chamada à API de envio de e-mail, por exemplo
+        return `Email enviado para ${email} com a mensagem: "${message}"`;
+      case FunctionsEnum.SEND_WHATSAPP_MESSAGE:
+        return `Mensagem de WhatsApp enviada para ${phone}: "${message}"`;
+      case FunctionsEnum.ADD_CONTACT_TO_DB:
+        return `Contato ${name} (${nickname}) adicionado ao banco de dados.`;
+      default:
+        return `Operação ${operation} não implementada.`;
+    }
   }
 );
 
-
+// Fluxo principal
 const training = ai.defineFlow('message', async (message) => {
   const response = await ai.generate({
     model: gemini15Flash,
     prompt: message,
-    tools: [getSchool],
+    tools: [execOperaction], // Corrigido: registrando a ferramenta certa
   });
 
   return response.text;
 });
 
-training("Eu me chama walter e estudo na escola 42 de Luanda escola de progracao, onde eu estudo?")
+// Teste
+training("adicionar contato 'João' com o telefone '123456789' e enviar mensagem 'Olá, João!'")
   .then(response => {
     console.log("Resposta:", response);
   })
